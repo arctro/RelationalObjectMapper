@@ -28,23 +28,6 @@ public abstract class DatabaseObject {
 	public DatabaseObject(){data = new HashMap<String, Object>();}
 	
 	/**
-	 * Constructor selects and maps values from a row
-	 * @param conn A database connection
-	 * @param id The id of the row to select
-	 * @param columns The columns to select
-	 * @throws SQLException Thrown when an SQL error occurs
-	 */
-	public DatabaseObject(Connection conn, int id, ColumnGroup columns) throws SQLException{
-		data = new HashMap<String, Object>();
-		
-		PreparedStatement prepared = conn.prepareStatement(generateSelect(columns) + " WHERE `" + getIdentifierColumn() + "` = ?");
-		prepared.setInt(1, id);
-		
-		ResultSet rs = prepared.executeQuery();
-		mapValues(rs, columns);
-	}
-	
-	/**
 	 * Generates a select statement. Do not allow user inputed
 	 * columns, as column tables or names are not sanitized and
 	 * result in a huge security hole when improperly handled. 
@@ -89,11 +72,6 @@ public abstract class DatabaseObject {
 	 * @return The tablename
 	 */
 	protected abstract String getTablename();
-	/**
-	 * Returns the identifier column
-	 * @return The identifier column
-	 */
-	protected abstract String getIdentifierColumn();
 	
 	/**
 	 * Maps values from a result set to the data <tt>HashMap</tt>.<br/>
@@ -120,7 +98,7 @@ public abstract class DatabaseObject {
 	 * @param rs The result set to get values from
 	 * @param columns The columns that have been selected
 	 */
-	protected abstract void mapValues(ResultSet rs, ColumnGroup columns);
+	protected abstract void mapValues(ResultSet rs, ColumnGroup columns) throws SQLException;
 	
 	/**
 	 * Gets a value. It is recommended that this generic function is
